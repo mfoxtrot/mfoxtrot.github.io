@@ -1,49 +1,74 @@
 (function () {
 'use strict';
 
-angular.module('LunchCheck', [])
-
-.controller('LunchCheckController', LunchCheckController);
-
-LunchCheckController.$inject = ['$scope'];
-
-function LunchCheckController($scope) {
+angular.module('ShoppingListCheckOff', [])
+.controller('ToBuyController', ToBuyController)
+.controller('AlreadyBoughtController', AlreadyBoughtController)
+.service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
 
+ToBuyController.$inject=['ShoppingListCheckOffService'];
+function ToBuyController(ShoppingListCheckOffService) {
+  var buyList = this;
 
-  $scope.CheckTheList = function () {
+  buyList.buyItems = ShoppingListCheckOffService.getBuyItems();
 
-    var InputArray = [];
-    var InputArrayLength = 0;
-
-    console.log($scope.InputList);
-
-    if (($scope.InputList == "") || (typeof $scope.InputList == "undefined")) {
-        $scope.message = "Please enter data first";
-        $scope.OutputStyle = "has-error";
-    } else {
-      InputArray = $scope.InputList.split(',');
-
-      InputArrayLength = 0;
-
-      for(var i=0; i<InputArray.length; i++) {
-            if (InputArray[i] != "") {
-                InputArrayLength++
-            }
-        }
-
-      $scope.message = InputArrayLength;
-
-      if ((InputArrayLength>=1) && (InputArrayLength<=3) ) {
-        $scope.message = "Enjoy!";
-      } else {
-        $scope.message = "Too much!";
-      };
-    }
-    console.log(InputArrayLength);
-    console.log($scope.message);
-    console.log($scope.InputList.split());
+  buyList.buyAnItem = function(itemIndex) {
+    console.log(itemIndex);
+    ShoppingListCheckOffService.buyItem(itemIndex);
   };
+
+};
+
+
+AlreadyBoughtController.$inject=['ShoppingListCheckOffService'];
+function AlreadyBoughtController(ShoppingListCheckOffService) {
+  var boughtList = this;
+
+  boughtList.boughtListItems = ShoppingListCheckOffService.getBoughtItems();
+};
+
+function ShoppingListCheckOffService() {
+  var service = this;
+
+  var buyItems=[
+    {
+      name: "cookies",
+      quantity: 2
+    },
+    {
+      name: "cakes",
+      quantity: 2
+    },
+    {
+      name: "milk",
+      quantity: 3
+    },
+    {
+      name: "oranges",
+      quantity: 10
+    },
+    {
+      name: "apples",
+      quantity: 10
+    }
+  ];
+
+  var boughtItems=[];
+
+  service.buyItem = function (itemIndex) {
+    boughtItems.push(buyItems[itemIndex]);
+    buyItems.splice(itemIndex,1);
+  };
+
+  service.getBuyItems = function() {
+    return buyItems;
+  };
+
+  service.getBoughtItems = function() {
+    return boughtItems;
+  };
+
 
 };
 
